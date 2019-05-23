@@ -1,0 +1,15 @@
+trigger QLITrigger on QuoteLineItem (after insert) {
+	if (Trigger.isInsert) {
+        Set<Id> quoteId = new Set<Id>(); 
+        for(Quote q: Trigger.new) {
+			    quoteId.add(q.QuoteId);
+        }
+        
+        List<Quote> quoteList = [SELECT ID, Number_of_QuoteLineItems__c, (SELECT Id FROM QuoteLineItems) FROM Quote WHERE Id IN: quoteId];                
+        
+        for(Quote q: quoteList) {
+            q.Count_of_Qli__c = q.QuoteLineItems.size();
+        }        
+        update quoteList;		
+    }
+}
