@@ -1,17 +1,21 @@
-trigger QLITrigger on QuoteLineItem (after insert, after update, after delete, after undelete) {
-
-    Set<Id> quoteIds = new Set<Id>();
-
-	if (Trigger.isInsert) {
+trigger QLITrigger on QuoteLineItem (after insert) {
+	
+    if (Trigger.isInsert) {
+        
+        Set<Id> quoteIds = new Set<Id>();
+        
         for(QuoteLineItem qli: Trigger.new) {
-			    quoteIds.add(qli.Id);
+			    quoteIds.add(qli.QuoteId);
         }
         
-        List<Quote> quoteList = [SELECT ID, Number_of_QuoteLineItems__c FROM Quote WHERE Id IN: quoteIds];                
-        
+        list<Quote> quoteList = [SELECT ID, Number_of_QuoteLineItems__c FROM Quote WHERE Id IN :quoteIds];
+		list<QuoteLineItem> qliList = [SELECT ID FROM QuoteLineItem WHERE QuoteId IN :quoteIds];
+                    
         for(Quote q: quoteList) {
-            q.Number_of_QuoteLineItems__c = q.QuoteLineItems.size();
+            q.Number_of_QuoteLineItems__c = qliList.size();
         }        
-        update quoteList;		
+        
+        update quoteList;	
+        
     }
 }
