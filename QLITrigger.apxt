@@ -5,14 +5,20 @@ trigger QLITrigger on QuoteLineItem (after insert) {
         Set<Id> quoteIds = new Set<Id>();
         
         for(QuoteLineItem qli: Trigger.new) {
-			    quoteIds.add(qli.QuoteId);
+			quoteIds.add(qli.QuoteId);
         }
         
-        list<Quote> quoteList = [SELECT ID, Number_of_QuoteLineItems__c FROM Quote WHERE Id IN :quoteIds];
-		list<QuoteLineItem> qliList = [SELECT ID FROM QuoteLineItem WHERE QuoteId IN :quoteIds];
+        List<Quote> quoteList = [SELECT ID, Number_of_QuoteLineItems__c FROM Quote WHERE Id IN :quoteIds];
+		List<QuoteLineItem> qliList = [SELECT ID, QuoteId FROM QuoteLineItem WHERE QuoteId IN :quoteIds];
                     
         for(Quote q: quoteList) {
-            q.Number_of_QuoteLineItems__c = qliList.size();
+            Integer count = 0;
+            for(QuoteLineItem qli: qliList) {
+                if (q.Id == qli.QuoteId) {
+                    count++;
+                }
+            }
+            q.Number_of_QuoteLineItems__c = count;
         }        
         
         update quoteList;	
