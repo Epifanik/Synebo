@@ -5,23 +5,26 @@ trigger QLITrigger on QuoteLineItem (after insert) {
         Set<Id> quoteIds = new Set<Id>();
         
         for(QuoteLineItem qli: Trigger.new) {
-		quoteIds.add(qli.QuoteId);
+			quoteIds.add(qli.QuoteId);
         }
         
-        //List<Quote> quoteList = [SELECT ID, Number_of_QuoteLineItems__c FROM Quote WHERE Id IN :quoteIds];
-	//List<QuoteLineItem> qliList = [SELECT ID, QuoteId FROM QuoteLineItem WHERE QuoteId IN :quoteIds];
-		
-        List<Quote> quoteList = new List<Quote>();
+        Map<Id, List<Id>> qAndQli = new Map<Id, List<Id>>();
+
+        for (QuoteLineItem qli : [SELECT QuoteId FROM QuoteLineItem]) {
+            if(qAndQli.containsKey(qli.QuoteId)) {
+                List<Id> qliId = qAndQli.get(qli.QuoteId);
+                qliId.add(qli.Id);
+                qAndQli.put(qli.QuoteId, qliId);
+            } else {
+                qAndQli.put(qli.QuoteId, new List<Id> { qli.Id });
+            }
+        }
         
-        AggregateResult[] groupedResults = [SELECT COUNT(Id), QuoteId FROM QuoteLineItem where QuoteId IN :quoteIds GROUP BY QuoteId];
-                    
-        for(AggregateResult ar:groupedResults) {
-		Id quoteId = (ID)ar.get('QuoteId');
-            Integer count = (INTEGER)ar.get('expr0');
-            Quote quote = new Quote(Id=quoteId);
-            quote.Number_of_QuoteLineItems__c = count;
-            quoteList.add(quote);
-        }        
+        List<Quote> quoteList = [SELECT Id, Number_of_QuoteLineItems__c FROM Quote WHERE Id IN :quoteIds];
+        
+        for (Quote q: quoteList) {
+            q.Number_of_QuoteLineItems__c = qAndQli.get(q.Id).size();
+        }
         
         update quoteList;	
         
