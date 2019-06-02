@@ -1,0 +1,32 @@
+global class QuoteProcessor implements Database.Batchable<sObject> {
+    
+	global Database.QueryLocator start(Database.BatchableContext bc) {
+        return Database.getQueryLocator('SELECT ID, Number_of_QuoteLineItems__c FROM Quote');
+    }
+    
+    global void execute(Database.BatchableContext bc, List<Quote> scope){
+        
+        Map<Id, List<Id>> qAndQli = new Map<Id, List<Id>>();
+
+        for (QuoteLineItem qli : [SELECT QuoteId FROM QuoteLineItem]) {
+            if(qAndQli.containsKey(qli.QuoteId)) {
+                List<Id> qliId = qAndQli.get(qli.QuoteId);
+                qliId.add(qli.Id);
+                qAndQli.put(qli.QuoteId, qliId);
+            } else {
+                qAndQli.put(qli.QuoteId, new List<Id> { qli.Id });
+            }
+        }
+        
+        for (Quote q: scope) {
+            q.Number_of_QuoteLineItems__c = qAndQli.get(q.Id).size();
+        }
+        
+        update scope;
+    }    
+    
+    global void finish(Database.BatchableContext bc){
+		Id job= bc.getJobId();
+        System.debug(job);
+    }      
+}
