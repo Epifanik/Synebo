@@ -1,0 +1,6 @@
+public with sharing class PdfController {
+    public List<Account> accList {get;set;}
+    public PdfController (){
+        accList = [SELECT id, Name, Type, Accountnumber, Annualrevenue, Rating FROM Account LIMIT 10];
+    }
+}
