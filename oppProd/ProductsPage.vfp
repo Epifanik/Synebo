@@ -1,0 +1,165 @@
+<apex:page standardController="Product2" recordSetVar="products" extensions="ProductsController">	
+    
+    <apex:form id="formid" >
+        
+        <!-- Choose Products  start-->
+        
+        <apex:pageBlock title="Products List" id="productsListChecklist" rendered="{!isFirst}">
+                  
+            <!-- Products List -->
+            <apex:pageBlockTable value="{! products }" var="pr">
+                <apex:column >
+                    <apex:inputCheckbox id="chkbx" value="{!pr.Id}"/>
+                </apex:column>
+                <apex:column headerValue="Product Name">
+                    <apex:outputLink value="{!pr.Id}">{!pr.Name}</apex:outputLink>
+                </apex:column> 
+                <apex:column value="{! pr.ProductCode }"/>
+      <!--          <apex:column value="{! pr.OpportunityProduct.ListPrice }"/> -->
+            </apex:pageBlockTable>
+
+			<!-- Pagination -->
+        <table style="width: 100%"><tr>
+            <td>
+                Page: <apex:outputText value=" {!PageNumber} of {! CEILING(ResultSize / PageSize) }"/>
+            </td>            
+            <td align="center">
+                <!-- Previous page -->
+                <!-- active -->
+                <apex:commandLink action="{! Previous }" value="« Previous"
+                     rendered="{! HasPrevious }"/>
+                <!-- inactive (no earlier pages) -->
+                <apex:outputText style="color: #ccc;" value="« Previous"
+                     rendered="{! NOT(HasPrevious) }"/>
+                &nbsp;&nbsp;  
+                <!-- Next page -->
+                <!-- active -->
+                <apex:commandLink action="{! Next }" value="Next »"
+                     rendered="{! HasNext }"/>
+                <!-- inactive (no more pages) -->
+                <apex:outputText style="color: #ccc;" value="Next »"
+                     rendered="{! NOT(HasNext) }"/>
+            </td>
+            
+            <td align="right">
+                Records per page:
+                <apex:selectList value="{! PageSize }" size="1">
+                    <apex:selectOption itemValue="5" itemLabel="5"/>
+                    <apex:selectOption itemValue="20" itemLabel="20"/>
+                    <apex:actionSupport event="onchange" reRender="productsListChecklist"/>
+                </apex:selectList>
+            </td>
+        </tr></table>
+            
+            <!-- Next Button-->
+            <apex:pageBlockButtons >
+            <apex:commandButton action="{!firstNext2}" value="Next" reRender="formid" />
+         </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+        
+        <!-- Choose Products  start-->
+    
+    	<!-- Edit Products List start -->
+        
+        <apex:pageBlock title="Products List Edit" id="productsListEdit" rendered="{!isSecond}">
+                  
+            <!-- Products List -->
+            <apex:pageBlockTable value="{! products }" var="pr">
+                <apex:column >
+                    <apex:outputLink value="{!pr.Id}">{!pr.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column headerValue="QUANTITY">
+                    <apex:inputText />
+                </apex:column>
+                <apex:column headerValue="SALES PRICE">
+                    <apex:inputText />
+                </apex:column>
+                <apex:column headerValue="DATE">
+                    <apex:inputText /><!-- <apex:inputfield  value="{!pr.OpportunityLineItem.Date}"/> -->
+                </apex:column>
+                <apex:column headerValue="LINE DESCRIPTION">
+                    <apex:inputText />
+                </apex:column>
+            </apex:pageBlockTable>
+
+			<!-- Pagination -->
+        <table style="width: 100%"><tr>
+            <td>
+                Page: <apex:outputText value=" {!PageNumber} of {! CEILING(ResultSize / PageSize) }"/>
+            </td>            
+            <td align="center">
+                <!-- Previous page -->
+                <!-- active -->
+                <apex:commandLink action="{! Previous }" value="« Previous"
+                     rendered="{! HasPrevious }"/>
+                <!-- inactive (no earlier pages) -->
+                <apex:outputText style="color: #ccc;" value="« Previous"
+                     rendered="{! NOT(HasPrevious) }"/>
+                &nbsp;&nbsp;  
+                <!-- Next page -->
+                <!-- active -->
+                <apex:commandLink action="{! Next }" value="Next »"
+                     rendered="{! HasNext }"/>
+                <!-- inactive (no more pages) -->
+                <apex:outputText style="color: #ccc;" value="Next »"
+                     rendered="{! NOT(HasNext) }"/>
+            </td>
+            
+            <td align="right">
+                Records per page:
+                <apex:selectList value="{! PageSize }" size="1">
+                    <apex:selectOption itemValue="5" itemLabel="5"/>
+                    <apex:selectOption itemValue="20" itemLabel="20"/>
+                    <apex:actionSupport event="onchange" reRender="productsListEdit"/>
+                </apex:selectList>
+            </td>
+        </tr></table>
+            
+            <!-- Next Button-->
+            <apex:pageBlockButtons >
+            <apex:commandButton value="Next"/>
+         </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+        
+        <!-- Edit Products List end -->
+        
+        <!-- Create Opp start -->
+        
+        <apex:pageBlock title="Create Opp" id="createOpp" rendered="{!isThird}">
+                  
+            <!-- Products List -->
+            
+            <apex:pageBlockButtons ><apex:commandButton value="Save" action="{!save}"/>
+                <apex:commandButton value="Cancel"/> 
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2" title="Opportunity Information">
+                <apex:inputText label="Opportunity Name" />
+                <apex:inputText label="Account Name" />
+                <apex:inputText label="Type" />
+                <apex:inputText label="Lead Source" />
+                <apex:inputText label="Amount" />
+                <apex:inputText label="Close Date" />
+                <apex:inputText label="Next Step" />
+                <apex:inputText label="Stage" />
+                <apex:inputText label="Probability (%)" />
+                <apex:inputText label="Primary Campaign Source" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Information">
+                <apex:inputText label="Order Number" />
+                <apex:inputText label="Current Generator(s)" />
+                <apex:inputText label="Tracking Number" />
+                <apex:inputText label="Main Competitor(s)" />
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Description Information">
+                <apex:inputTextarea label="Description"/>
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+        
+        <!-- Create Opp end -->
+
+    </apex:form>
+</apex:page>
