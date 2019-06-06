@@ -2,7 +2,7 @@
     
     <apex:form id="formid" >
         
-        <!-- Choose Products  start-->
+        <!-- Choose Products start -->
         
         <apex:pageBlock title="Products List" id="productsListChecklist" rendered="{!isFirst}">
                   
@@ -12,7 +12,7 @@
                     <apex:inputCheckbox id="chkbx" value="{!pr.Id}"/>
                 </apex:column>
                 <apex:column headerValue="Product Name">
-                    <apex:outputLink value="{!pr.Id}">{!pr.Name}</apex:outputLink>
+                    <apex:outputLink value="/lightning/r/{!pr.Id}/view">{!pr.Name}</apex:outputLink>
                 </apex:column> 
                 <apex:column value="{! pr.ProductCode }"/>
       <!--          <apex:column value="{! pr.OpportunityProduct.ListPrice }"/> -->
@@ -26,7 +26,7 @@
             <td align="center">
                 <!-- Previous page -->
                 <!-- active -->
-                <apex:commandLink action="{! Previous }" value="« Previous"
+                <apex:commandLink immediate="true" action="{! Previous }" value="« Previous"
                      rendered="{! HasPrevious }"/>
                 <!-- inactive (no earlier pages) -->
                 <apex:outputText style="color: #ccc;" value="« Previous"
@@ -34,7 +34,7 @@
                 &nbsp;&nbsp;  
                 <!-- Next page -->
                 <!-- active -->
-                <apex:commandLink action="{! Next }" value="Next »"
+                <apex:commandLink immediate="true" action="{! Next }" value="Next »"
                      rendered="{! HasNext }"/>
                 <!-- inactive (no more pages) -->
                 <apex:outputText style="color: #ccc;" value="Next »"
@@ -52,13 +52,14 @@
         </tr></table>
             
             <!-- Next Button-->
-            <apex:pageBlockButtons >
-            <apex:commandButton action="{!firstNext2}" value="Next" reRender="formid" />
+         <apex:pageBlockButtons >
+            <apex:commandButton value="Back" disabled="true" />
+            <apex:commandButton action="{!firstNext}" value="Next" reRender="formid" immediate="true" />
          </apex:pageBlockButtons>
             
         </apex:pageBlock>
         
-        <!-- Choose Products  start-->
+        <!-- Choose Products end -->
     
     	<!-- Edit Products List start -->
         
@@ -67,7 +68,7 @@
             <!-- Products List -->
             <apex:pageBlockTable value="{! products }" var="pr">
                 <apex:column >
-                    <apex:outputLink value="{!pr.Id}">{!pr.Name}</apex:outputLink>
+                    <apex:outputLink value="/lightning/r/{!pr.Id}/view">{!pr.Name}</apex:outputLink>
                 </apex:column>
                 <apex:column headerValue="QUANTITY">
                     <apex:inputText />
@@ -117,8 +118,9 @@
         </tr></table>
             
             <!-- Next Button-->
-            <apex:pageBlockButtons >
-            <apex:commandButton value="Next"/>
+         <apex:pageBlockButtons >
+            <apex:commandButton action="{!secondBack}" value="Back" reRender="formid" immediate="true" />
+            <apex:commandButton action="{!secondNext}" value="Next" reRender="formid" immediate="true" />
          </apex:pageBlockButtons>
             
         </apex:pageBlock>
@@ -131,9 +133,12 @@
                   
             <!-- Products List -->
             
-            <apex:pageBlockButtons ><apex:commandButton value="Save" action="{!save}"/>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!thirdBack}" value="Back" reRender="formid" immediate="true" />
+                <apex:commandButton value="Save" action="{!save}"/>
                 <apex:commandButton value="Cancel"/> 
             </apex:pageBlockButtons>
+            
             <apex:pageBlockSection columns="2" title="Opportunity Information">
                 <apex:inputText label="Opportunity Name" />
                 <apex:inputText label="Account Name" />
@@ -154,7 +159,7 @@
             </apex:pageBlockSection>
 
             <apex:pageBlockSection title="Description Information">
-                <apex:inputTextarea label="Description"/>
+                <apex:inputTextarea rows="10" cols="100" label="Description"/>
             </apex:pageBlockSection>
             
         </apex:pageBlock>
