@@ -1,0 +1,37 @@
+public with sharing class ProductsController {
+
+    public Boolean isFirst {get;set;}
+    public Boolean isSecond {get;set;}
+    public Boolean isThird {get;set;}
+    
+    public ProductsController(ApexPages.StandardSetController controller) {
+        isFirst = true;
+		isSecond = false;
+        isThird = false;
+    }
+    
+    public void firstNext2() {
+        // logic
+        isFirst = isThird = false;
+        isSecond = true;
+        System.debug(isFirst);
+    }
+
+    public PageReference secondNext() {
+        // logic
+        isFirst = isSecond = false;
+        isThird = true;
+        return null;
+    }
+    
+    public void save() {
+        // logic
+    }
+    
+    public List<Product2> getProducts() {
+        List<Product2> products = [SELECT Name, ProductCode FROM Product2];
+        return products;
+    }
+    
+    
+}
