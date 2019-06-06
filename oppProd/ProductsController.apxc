@@ -3,35 +3,50 @@ public with sharing class ProductsController {
     public Boolean isFirst {get;set;}
     public Boolean isSecond {get;set;}
     public Boolean isThird {get;set;}
+    private final Product2 products;
+//    public List<SObject> productsAndPrices { get; private set; }
     
-    public ProductsController(ApexPages.StandardSetController controller) {
+    public ProductsController(ApexPages.StandardSetController stdController) {
+     /*   this.productsAndPrices = new List<SObject>();
+        this.productsAndPrices.addAll([SELECT Name, ProductCode FROM Product2]);
+        this.productsAndPrices.addAll([SELECT ListPrice FROM OpportunityLineItem]);*/
+        
+        this.products = (Product2)stdController.getRecord();
+        
         isFirst = true;
 		isSecond = false;
         isThird = false;
     }
     
-    public void firstNext2() {
-        // logic
+    public void firstNext() {
         isFirst = isThird = false;
         isSecond = true;
-        System.debug(isFirst);
+    }
+    
+    public void secondBack() {
+        isFirst = true;
+		isSecond = isThird = false;
     }
 
-    public PageReference secondNext() {
-        // logic
+    public void secondNext() {
         isFirst = isSecond = false;
         isThird = true;
-        return null;
+    }
+    
+    public void thirdBack() {
+        isSecond = true;
+		isFirst = isThird = false;
     }
     
     public void save() {
         // logic
     }
     
+    /*
     public List<Product2> getProducts() {
         List<Product2> products = [SELECT Name, ProductCode FROM Product2];
         return products;
     }
-    
+    */
     
 }
