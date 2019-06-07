@@ -5,18 +5,26 @@
         <!-- Choose Products start -->
         
         <apex:pageBlock title="Products List" id="productsListChecklist" rendered="{!isFirst}">
-                  
-            <!-- Products List -->
-            <apex:pageBlockTable value="{! products }" var="pr">
+            
+              <!-- Buttons -->
+             <apex:pageBlockButtons >
+                <apex:commandButton value="Back" disabled="true" />
+                <apex:commandButton action="{!firstNext}" value="Next" reRender="formid" />
+             </apex:pageBlockButtons>
+            
+            <!-- Products List Table -->
+            <apex:pageBlockTable value="{!wrapProductList}" var="wProd">
                 <apex:column >
-                    <apex:inputCheckbox id="chkbx" value="{!pr.Id}"/>
+                    <apex:inputCheckbox id="InputId" value="{!wProd.isSelected}"/>
                 </apex:column>
                 <apex:column headerValue="Product Name">
-                    <apex:outputLink value="/lightning/r/{!pr.Id}/view">{!pr.Name}</apex:outputLink>
+                    <apex:outputLink value="/lightning/r/{!wProd.Product.Id}/view">{!wProd.Product.Name}</apex:outputLink>
                 </apex:column> 
-                <apex:column value="{! pr.ProductCode }"/>
-      <!--          <apex:column value="{! pr.OpportunityProduct.ListPrice }"/> -->
+                <apex:column value="{! wProd.Product.ProductCode }"/>
+      			<apex:column value="{! wProd.PriceBook.UnitPrice }"/>
             </apex:pageBlockTable>
+            
+            <br/>
 
 			<!-- Pagination -->
         <table style="width: 100%"><tr>
@@ -51,12 +59,6 @@
             </td>
         </tr></table>
             
-            <!-- Next Button-->
-         <apex:pageBlockButtons >
-            <apex:commandButton value="Back" disabled="true" />
-            <apex:commandButton action="{!firstNext}" value="Next" reRender="formid" immediate="true" />
-         </apex:pageBlockButtons>
-            
         </apex:pageBlock>
         
         <!-- Choose Products end -->
@@ -64,11 +66,17 @@
     	<!-- Edit Products List start -->
         
         <apex:pageBlock title="Products List Edit" id="productsListEdit" rendered="{!isSecond}">
+            
+               <!-- Buttons -->
+             <apex:pageBlockButtons >
+                <apex:commandButton action="{!secondBack}" value="Back" reRender="formid" />
+                <apex:commandButton action="{!secondNext}" value="Next" reRender="formid" />
+             </apex:pageBlockButtons>
                   
             <!-- Products List -->
-            <apex:pageBlockTable value="{! products }" var="pr">
+            <apex:pageBlockTable value="{!selectedProducts}" var="prod">
                 <apex:column >
-                    <apex:outputLink value="/lightning/r/{!pr.Id}/view">{!pr.Name}</apex:outputLink>
+                    <apex:outputLink value="/lightning/r/{!prod.Id}/view">{!prod.Name}</apex:outputLink>
                 </apex:column>
                 <apex:column headerValue="QUANTITY">
                     <apex:inputText />
@@ -117,12 +125,6 @@
             </td>
         </tr></table>
             
-            <!-- Next Button-->
-         <apex:pageBlockButtons >
-            <apex:commandButton action="{!secondBack}" value="Back" reRender="formid" immediate="true" />
-            <apex:commandButton action="{!secondNext}" value="Next" reRender="formid" immediate="true" />
-         </apex:pageBlockButtons>
-            
         </apex:pageBlock>
         
         <!-- Edit Products List end -->
@@ -161,6 +163,11 @@
             <apex:pageBlockSection title="Description Information">
                 <apex:inputTextarea rows="10" cols="100" label="Description"/>
             </apex:pageBlockSection>
+            
+            <apex:pageBlockTable value="{!selectedProducts}" var="pr" id="testBlock">
+            <apex:column value="{!pr.Name}"/>
+            <apex:column value="{!pr.ProductCode}"/>
+           </apex:pageBlockTable>
             
         </apex:pageBlock>
         
