@@ -3,22 +3,53 @@ public with sharing class ProductsController {
     public Boolean isFirst {get;set;}
     public Boolean isSecond {get;set;}
     public Boolean isThird {get;set;}
-    private final Product2 products;
-//    public List<SObject> productsAndPrices { get; private set; }
+    
+    public List<WrapClass> wrapProductList { get; set; }
+    public List<Product2> selectedProducts { get; set; }  
     
     public ProductsController(ApexPages.StandardSetController stdController) {
-     /*   this.productsAndPrices = new List<SObject>();
-        this.productsAndPrices.addAll([SELECT Name, ProductCode FROM Product2]);
-        this.productsAndPrices.addAll([SELECT ListPrice FROM OpportunityLineItem]);*/
         
-        this.products = (Product2)stdController.getRecord();
+        List<Id> productsIds = new List<Id>();
+        
+        for (Product2 prod: [SELECT Id FROM Product2]) {
+            productsIds.add(prod.id);
+        }
+        
+        Map<Id, PricebookEntry> listPriceById = new Map<Id, PricebookEntry>();
+        
+        for (PricebookEntry priceBook: [SELECT Product2Id, UnitPrice FROM PricebookEntry WHERE Product2Id IN :productsIds]){
+           listPriceById.put(priceBook.Product2Id, priceBook);
+        }
+        
+        wrapProductList = new List<WrapClass>();
+        
+        for (Product2 prod: [SELECT Id, Name, ProductCode FROM Product2]){
+           wrapProductList.add(new WrapClass(prod, listPriceById.get(prod.Id)));
+        }
+
+        /*
+        for (WrapClass wc: wrapProductList) {
+        	System.debug('WrapClass' + wc);
+        }
+		*/
         
         isFirst = true;
 		isSecond = false;
         isThird = false;
     }
     
+    public void processSelected(){
+     selectedProducts = new List<Product2>();
+     
+      for (WrapClass wrapObj: wrapProductList){
+           if(wrapObj.isSelected == true){
+           selectedProducts.add(wrapObj.product);
+           }
+         }
+      }
+    
     public void firstNext() {
+        processSelected();
         isFirst = isThird = false;
         isSecond = true;
     }
@@ -42,11 +73,17 @@ public with sharing class ProductsController {
         // logic
     }
     
-    /*
-    public List<Product2> getProducts() {
-        List<Product2> products = [SELECT Name, ProductCode FROM Product2];
-        return products;
-    }
-    */
+    public class WrapClass {
+    
+    public boolean isSelected { get ; set; }
+    public Product2 product { get; set; }
+    public PricebookEntry priceBook { get; set; }
+        
+        public WrapClass(Product2 prod, PricebookEntry priceBook){
+            this.product = prod;
+            this.priceBook = priceBook;
+            isSelected = false;
+        }
+  }
     
 }
