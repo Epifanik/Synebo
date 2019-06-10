@@ -1,0 +1,23 @@
+@isTest
+public class CurrencyRateSchedulableTest {
+    
+    public static String CRON_EXP = '0 0 0 15 3 ? 2022';
+    
+    @isTest
+    static void testScheduledJob() {
+        List<CurrencyType> currencyTypes = new List<CurrencyType>();
+
+        for (Integer i = 0; i < 100; i++) {
+            currencyTypes.add(new CurrencyType());
+        }
+        insert currencyTypes;
+        
+        Test.startTest();
+        CurrencyRateScheduled currRateSch = new CurrencyRateScheduled();
+        String jobId = System.Schedule('CurrencyRateScheduled', CRON_EXP, currRateSch);
+        Test.stopTest();
+        
+        List<CurrencyType> checkCurrencyTypes = [SELECT ConversionRate FROM CurrencyType];
+        System.assertequals(100, checkCurrencyTypes.size()); 
+    }
+}
