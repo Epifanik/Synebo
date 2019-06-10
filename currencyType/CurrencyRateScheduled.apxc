@@ -1,0 +1,40 @@
+global class CurrencyRateScheduled implements Schedulable {
+    
+    global void execute(SchedulableContext ctx) {
+        
+        List<CurrencyType> currencyTypes = [SELECT ConversionRate FROM CurrencyType];
+        
+        Http httpProtocol = new Http();
+        HttpRequest request = new HttpRequest();
+        String endpoint = 'https://api.exchangeratesapi.io/latest';
+        request.setEndPoint(endpoint); 
+        request.setMethod('GET');
+        HttpResponse response = httpProtocol.send(request);
+        
+        Map<String, Object> results = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+        List<Object> convRates = (List<Object>) results.get('Rate');
+        System.debug('convRates :' + convRates); 
+        
+        JSONParser parser = JSON.createParser(response.getBody());
+        String convRate = '';
+        while (parser.nextToken() != null) {
+            if ((parser.getCurrentToken() == JSONToken.FIELD_NAME) && 
+                (parser.getText() == 'Rate')) {
+                    parser.nextToken();
+                    convRate = parser.getText();
+                }
+        }
+        System.debug('convRate :' + convRate); 
+        
+        /*
+        
+        if(!currencyTypes.isEmpty()) {
+            for (CurrencyType currencyType_i: currencyTypes) {
+                currencyType_i.ConversionRate = convRate;
+            }
+            update currencyTypes;
+        }    
+*/
+    }
+    
+}
